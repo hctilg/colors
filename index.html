@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+
+    <!-- Old versions of IE need this to be in the first response chunk -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Colors</title>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <meta name="MobileOptimized" content="176">
+    <meta name="HandheldFriendly" content="True">
+    
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <noscript>
+      <style>
+body > *:not(noscript) {
+  display: none !important;
+}
+
+noscript > p {
+  margin-top: calc(100vh / 7);
+  text-align: center;
+}
+      </style>
+    </noscript>
+  </head>
+  <body dir="ltr">
+    <noscript>
+      <p> Please Enable JavaScript in Browser! </p>
+    </noscript>
+
+    <header id="header">
+      <h1 style="display: none;" hidden aria-hidden="true">Colors</h1>
+      <h3 id="title">
+        <strong>$_</strong>
+        <span>C</span>
+        <span>o</span>
+        <span>l</span>
+        <span>o</span>
+        <span>r</span>
+        <span>s</span>
+      </h3>
+
+      <a id="github" title="Give me a star ^^" rel="GitHub" href="https://github.com/hctilg/colors">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      </a>
+    </header>
+    <main>
+      <input type="radio" id="generator-tab" name="tab">
+      <label for="generator-tab">Generator</label>
+      <input type="radio" id="extractor-tab" name="tab" checked>
+      <label for="extractor-tab">Extractor</label>
+      <input type="radio" id="picker-tab" name="tab">
+      <label for="picker-tab">Picker</label>
+      <input type="radio" id="mixer-tab" name="tab">
+      <label for="mixer-tab">Mixer</label>
+      <div class="line"></div>
+      <div class="content-container">
+        <div class="content" id="c1">
+          <p>We have <strong>256^3-1</strong> colors, which means exactly <strong>16,777,215</strong> real colors.<br>With this generator, you can get all of them.</p>
+          <section id="generator-container">
+            <input type="number" name="number" min="0" max="16777215" value="0" placeholder="n=?">
+          </section>
+          <p></p>
+          <p class="rgb"><strong>RGB:</strong>&nbsp;&nbsp;<code>rgb(0, 0, 0)</code></p>
+          <p class="hex"><strong>Hex:</strong>&nbsp;&nbsp;<code>#000000</code></p>
+        </div>
+        <div class="content null" id="c2">
+          <p>Extract palette & complementary of a picture.</p>
+          <form data-turbo='false' action='#' accept-charset='UTF-8' method='post'>
+            <svg aria-hidden='true' viewBox='0 0 24 24' version='1.1' width='32' height='32' data-view-component='true'><path d='M3 3a2 2 0 0 1 2-2h9.982a2 2 0 0 1 1.414.586l4.018 4.018A2 2 0 0 1 21 7.018V21a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm2-.5a.5.5 0 0 0-.5.5v18a.5.5 0 0 0 .5.5h14a.5.5 0 0 0 .5-.5V8.5h-4a2 2 0 0 1-2-2v-4Zm10 0v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 0-.146-.336l-4.018-4.018A.5.5 0 0 0 15 2.5Z'></path></svg>
+            <p class='file-upload-drag-text'> Drag file here </p>
+            <p class='file-upload-drop-text'>Drop to upload your file</p>
+            <p class='file-upload-choose-text'>
+               Or 
+               <label for='ex_file' class='file-upload-choose no-select'>
+                <span> choose your file </span>
+                <input accept="image/*" type='file' name='file' id='ex_file' class='manual-file-chooser' autocomplete='off' aria-label='Choose your files'>
+              </label>
+            </p>
+          </form>
+          <canvas id="ext_canvas"></canvas>
+          <div id="palette"></div>
+          <p></p>
+          <div id="complementary"></div>
+        </div>
+        <div class="content" id="c3">
+          <p>Color picker from a photo.</p>
+          <form data-turbo='false' action='#' accept-charset='UTF-8' method='post'>
+            <svg aria-hidden='true' viewBox='0 0 24 24' version='1.1' width='32' height='32' data-view-component='true'><path d='M3 3a2 2 0 0 1 2-2h9.982a2 2 0 0 1 1.414.586l4.018 4.018A2 2 0 0 1 21 7.018V21a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm2-.5a.5.5 0 0 0-.5.5v18a.5.5 0 0 0 .5.5h14a.5.5 0 0 0 .5-.5V8.5h-4a2 2 0 0 1-2-2v-4Zm10 0v4a.5.5 0 0 0 .5.5h4a.5.5 0 0 0-.146-.336l-4.018-4.018A.5.5 0 0 0 15 2.5Z'></path></svg>
+            <p class='file-upload-drag-text'> Drag file here </p>
+            <p class='file-upload-drop-text'>Drop to upload your file</p>
+            <p class='file-upload-choose-text'>
+               Or 
+               <label for='pik_file' class='file-upload-choose no-select'>
+                <span> choose your file </span>
+                <input accept="image/*" type='file' name='file' id='pik_file' class='manual-file-chooser' autocomplete='off' aria-label='Choose your files'>
+              </label>
+            </p>
+          </form>
+          <button id="open-picker" hidden="true">Open Color Picker</button>
+          <p id="res"></p>
+          <img id="pik_preview" style="max-width: 90vw;" src="" alt=""/>
+        </div>
+        <div class="content null" id="c4">
+          <h4>It mix colors for you.</h4>
+          <p class="note">* Tap on colored rectangle to remove.</p>
+          <nav>
+            <input type="color" value="#BCFCBF" name="mx-color" id="input-mix-color">
+            <button class="add">Add</button>
+            <button class="reset">Reset</button>
+          </nav>
+          <div id="mix-colors"></div>
+          <h4 id="mixed-color"><strong>Mixed color:</strong>&nbsp;&nbsp;<code></code></h4>
+          <h4 id="preview-mix"><strong>Preview:</strong>&nbsp;&nbsp;<div></div></h4>
+        </div>
+      </div>
+    </main>
+    <footer>
+      <p>Coded by ❤️ with <a href="https://github.com/hctilg" target="_blank">Hctilg</a>.</p>
+    </footer>
+    <script src="script.js"></script>
+  </body>
+</html>
