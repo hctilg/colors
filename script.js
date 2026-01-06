@@ -2,7 +2,7 @@ const random = (min, max) => (Math.floor(Math.random() * (max - min)) + min);
 
 const mixColors = (...colors) => {
   const totalColors = colors.length;
-  
+
   let totalRed = 0;
   let totalGreen = 0;
   let totalBlue = 0;
@@ -17,7 +17,7 @@ const mixColors = (...colors) => {
   const finalGreen = Math.round(totalGreen / totalColors);
   const finalBlue = Math.round(totalBlue / totalColors);
 
-  const finalColor = '#' + 
+  const finalColor = '#' +
     finalRed.toString(16).padStart(2, '0') +
     finalGreen.toString(16).padStart(2, '0') +
     finalBlue.toString(16).padStart(2, '0');
@@ -320,7 +320,7 @@ const quantization = (rgbValues, depth) => {
 
 const title_handler = () => {
   var cg = random(132, 170);
-  document.querySelector('#title strong').setAttribute('style', `color: ${rgbToHex({r: cg, g: cg, b: cg})};`);
+  document.querySelector('#title strong').setAttribute('style', `color: ${rgbToHex({ r: cg, g: cg, b: cg })};`);
   document.querySelectorAll('#title span').forEach(element => {
     element.setAttribute('style', `color: ${rgbToHex({
       r: random(15, 255),
@@ -335,21 +335,21 @@ const fileToBlob = async (file) => new Blob(file);
 document.addEventListener("DOMContentLoaded", ev => {
   title_handler()
   setInterval(title_handler, random(100, 500));
-  
+
   const gi = document.querySelector('#generator-container > input');
   const gi_ev_handler = ev => {
     var c = calcRGB(+gi.value);
     if (c === undefined) {
-      gi.value = (+gi.value < 0) ? 0 : (256**3)-1;
+      gi.value = (+gi.value < 0) ? 0 : (256 ** 3) - 1;
       return;
     }
-    var hex_color = rgbToHex({r: c[0], g: c[1], b: c[2]});
+    var hex_color = rgbToHex({ r: c[0], g: c[1], b: c[2] });
     document.querySelector('#generator-container').setAttribute('style', `background: ${hex_color};`);
     document.querySelector('#c1 .rgb code').innerHTML = `rgb(${c[0]}, ${c[1]}, ${c[2]})`;
     document.querySelector('#c1 .hex code').innerHTML = hex_color;
   }
   gi.value = random(0, (256 ** 3) - 32);
-  gi_ev_handler();  
+  gi_ev_handler();
   gi.addEventListener('input', gi_ev_handler);
 
   const extract_colors = (...files) => {
@@ -393,10 +393,10 @@ document.addEventListener("DOMContentLoaded", ev => {
     fileToBlob(file).then(
       blob => fileReader.readAsDataURL(blob)
     )
-    
+
   }
 
-  (function() {
+  (function () {
     const form = document.querySelector('#c2 form');
     const files_input = document.querySelector('#ex_file');
 
@@ -441,34 +441,108 @@ document.addEventListener("DOMContentLoaded", ev => {
 
   const loadImage = (...files) => {
     const file = files[0];
-    const fileReader = new FileReader()
+    const fileReader = new FileReader();
+    const canvas = document.getElementById('pik_canvas');
+    const ctx = canvas.getContext('2d');
+    const image = new Image();
+    let currentImage = null; // Store the image for redrawing
+    let lastPickedColor = null; // Store the last picked color for copying
 
-    fileReader.addEventListener('load', function() {
-      document.getElementById('pik_preview').src = this.result
-    })
-  
+    fileReader.addEventListener('load', function () {
+      image.onload = () => {
+        currentImage = image;
+
+        // Set canvas size to match image (with max width constraint)
+        const maxWidth = Math.min(window.innerWidth * 0.9, 800);
+        const scale = image.width > maxWidth ? maxWidth / image.width : 1;
+        canvas.width = image.width * scale;
+        canvas.height = image.height * scale;
+
+        // Draw image to canvas
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+        // Show the canvas
+        canvas.style.display = 'block';
+
+        // Reset result text and hide copy button
+        document.getElementById('res').innerHTML = 'Click on the image to pick a color';
+        document.getElementById('color-swatch').style.backgroundColor = 'transparent';
+        document.getElementById('copy-color').hidden = true;
+        lastPickedColor = null;
+      };
+      image.src = this.result;
+    });
+
     fileToBlob(file).then(
       blob => fileReader.readAsDataURL(blob)
-    )
+    );
 
-    document.getElementById('open-picker').hidden = false;
-    document.getElementById('open-picker').addEventListener('click', ev => {
-      try {
-        eyeDropper.open()
-        .then(res => {
-          document.getElementById('res').innerHTML = `Picked Color: <b>${res.sRGBHex}</b>`
-        })
-        .catch(err => {
-          console.log("User canceled the selection.");
-        });
-      } catch (error) {
-        alert("EyeDropper isn't supported in this browser !!!");
+    // Add click handler for color picking
+    canvas.onclick = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = Math.floor((e.clientX - rect.left) * (canvas.width / rect.width));
+      const y = Math.floor((e.clientY - rect.top) * (canvas.height / rect.height));
+
+      const pixel = ctx.getImageData(x, y, 1, 1).data;
+      const hexColor = rgbToHex({ r: pixel[0], g: pixel[1], b: pixel[2] });
+      lastPickedColor = hexColor;
+
+      // Redraw image to clear previous indicator
+      if (currentImage) {
+        ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
       }
-    });
-    document.getElementById('open-picker').click();
+
+      // Draw click position indicator
+      const indicatorRadius = 12;
+
+      // Outer ring (white for contrast)
+      ctx.beginPath();
+      ctx.arc(x, y, indicatorRadius, 0, 2 * Math.PI);
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Inner ring (dark for visibility)
+      ctx.beginPath();
+      ctx.arc(x, y, indicatorRadius, 0, 2 * Math.PI);
+      ctx.strokeStyle = '#333333';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Center dot
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, 2 * Math.PI);
+      ctx.fillStyle = hexColor;
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Update result display
+      document.getElementById('res').innerHTML = `Picked: <b>${hexColor}</b> — rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]})`;
+      document.getElementById('color-swatch').style.backgroundColor = hexColor;
+
+      // Show copy button
+      document.getElementById('copy-color').hidden = false;
+    };
+
+    // Copy button handler
+    document.getElementById('copy-color').onclick = () => {
+      if (lastPickedColor) {
+        navigator.clipboard.writeText(lastPickedColor).then(() => {
+          const btn = document.getElementById('copy-color');
+          btn.classList.add('copied');
+          btn.title = 'Copied!';
+          setTimeout(() => {
+            btn.classList.remove('copied');
+            btn.title = 'Copy color code';
+          }, 1500);
+        });
+      }
+    };
   }
 
-  (function() {
+  (function () {
     const form = document.querySelector('#c3 form');
     const files_input = document.querySelector('#pik_file');
 
@@ -537,7 +611,7 @@ document.addEventListener("DOMContentLoaded", ev => {
       document.querySelector('#mixed-color code').innerText = mixed_color;
       document.querySelector('#preview-mix div').setAttribute('style', `background: ${mixed_color};`);
     }
-    
+
   });
 
   const reset_btn = document.querySelector('#c4 .reset');
